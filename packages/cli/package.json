@@ -1,0 +1,17 @@
+{
+  "name": "@udba/cli",
+  "version": "1.0.0",
+  "description": "Minimalistic CLI app framework",
+  "main": "index.js",
+  "author": "Radoslaw Mejer <radmen@baethon.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-sinon": "^2.8.1",
+    "mocha": "^7.0.1",
+    "sinon": "^8.1.1"
+  }
+}
