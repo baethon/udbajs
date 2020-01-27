@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "lint": "standard",
-    "lint:fix": "standard --fix"
+    "lint:fix": "standard --fix",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "husky": "^4.2.1",
@@ -20,6 +21,7 @@
     }
   },
   "lint-staged": {
-    "*.js": ["npm run lint:fix"]
+    "*.js": ["npm run lint:fix"],
+    "*.ne": ["lerna run compile:grammar"]
   }
 }

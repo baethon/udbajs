@@ -6,12 +6,18 @@
   "author": "Radoslaw Mejer <radmen@baethon.com>",
   "license": "MIT",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "compile:grammar": "foreach -g 'src/grammar/*.ne' -x './node_modules/.bin/nearleyc #{path} -o #{dir}/#{name}.js'"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-sinon": "^2.8.1",
     "mocha": "^7.0.1",
     "sinon": "^8.1.1"
+  },
+  "dependencies": {
+    "@hapi/joi": "^17.1.0",
+    "foreach-cli": "^1.8.1",
+    "nearley": "^2.19.1"
   }
 }
