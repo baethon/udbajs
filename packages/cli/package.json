@@ -7,17 +7,30 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha",
-    "compile:grammar": "foreach -g 'src/grammar/*.ne' -x './node_modules/.bin/nearleyc #{path} -o #{dir}/#{name}.js'"
+    "compile:grammar": "foreach -g 'src/grammar/*.ne' -x './node_modules/.bin/nearleyc #{path} -o #{dir}/#{name}.js'",
+    "precommit": "lint-staged",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-sinon": "^2.8.1",
+    "lint-staged": "^10.0.3",
     "mocha": "^7.0.1",
-    "sinon": "^8.1.1"
+    "sinon": "^8.1.1",
+    "standard": "^14.3.1"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.0",
     "foreach-cli": "^1.8.1",
     "nearley": "^2.19.1"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix"
+    ],
+    "*.ne": [
+      "npm run compile:grammar"
+    ]
   }
 }
