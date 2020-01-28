@@ -1,22 +1,29 @@
 const Joi = require('@hapi/joi')
+const { Parser, Grammar } = require('nearley')
+const commandGrammar = require('./grammar/command')
 
 const paramToJoiRule = (input) => {
   const {
     name,
-    required,
+    optional = false,
     type = 'string',
-    description = null
-  } = parseSingleParam(input)
+    description = null,
+    default: defaultValue = undefined
+  } = input
   let rule = (type === 'array')
     ? Joi.array().items(String).default([])
     : (type === 'boolean')
-      ? Joi.boolean().default(false)
+      ? Joi.boolean()
       : Joi.string()
 
-  if (required && type !== 'array') {
+  if (!optional && type !== 'array') {
     rule = rule.required()
   } else {
     rule = rule.optional()
+  }
+
+  if (defaultValue !== undefined) {
+    rule = rule.default(defaultValue)
   }
 
   if (description) {
@@ -28,31 +35,24 @@ const paramToJoiRule = (input) => {
   }
 }
 
-const parseSingleParam = (param) => {
-  const flagged = /^--/.test(param)
-  const name = param.replace(/^(--)?(\w+).*$/, '$2')
-  const [, positionalFlags] = /^\w+([?*])/.exec(param) || []
-  const [, description] = /:\s*(.+?)$/.exec(param) || []
-
-  return {
-    name,
-    required: (!flagged && positionalFlags !== '?'),
-    type: (positionalFlags === '*')
-      ? 'array'
-      : (flagged)
-        ? 'boolean'
-        : 'string',
-    description: description && description.trim()
-  }
-}
-
 class SignatureParser {
   /**
    * @constructor
    * @param {String} signature
    */
   constructor (signature) {
-    this.signature = signature.trim()
+    const { name, parameters } = this._parseSignature(signature)
+
+    this._name = name
+    this._parameters = parameters
+  }
+
+  _parseSignature (signature) {
+    const parser = new Parser(Grammar.fromCompiled(commandGrammar))
+    parser.feed(signature)
+    const [[name, parameters]] = parser.results
+
+    return { name, parameters }
   }
 
   /**
@@ -61,8 +61,7 @@ class SignatureParser {
    * @return {String}
    */
   get command () {
-    const [name] = this.signature.split(/\s+/)
-    return name
+    return this._name
   }
 
   /**
@@ -71,24 +70,10 @@ class SignatureParser {
    * @return {Joi}
    */
   get rules () {
-    const rawParams = this._getRawParameters()
-
-    return rawParams.reduce(
-      (joiObject, paramSignature) => joiObject.append(paramToJoiRule(paramSignature)),
+    return this._parameters.reduce(
+      (joiObject, param) => joiObject.append(paramToJoiRule(param)),
       Joi.object()
     )
-  }
-
-  /**
-   * Get raw parameters definition
-   *
-   * @return {String[]}
-   * @private
-   */
-  _getRawParameters () {
-    const results = []
-
-    return results
   }
 }
 

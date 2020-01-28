@@ -31,13 +31,18 @@ describe('Param parser', () => {
     ['hello:world {--active} {--name=Jon}', 'hello:world', [
       { name: 'active', optional: true, type: 'boolean', default: false },
       { name: 'name', optional: true, type: 'string', default: 'Jon' }
+    ]],
+    ['hello {--active : Only active} {--bar}', 'hello', [
+      { name: 'active', optional: true, type: 'boolean', description: 'Only active', default: false },
+      { name: 'bar', optional: true, type: 'boolean', default: false }
     ]]
   ]
 
   testCases.forEach(([input, commandName, parameters]) => {
     test(input, () => {
       parser.feed(input)
-      expect(parser.results).to.eql([[commandName, parameters]])
+      const [first] = parser.results
+      expect(first).to.eql([commandName, parameters])
     })
   })
 })

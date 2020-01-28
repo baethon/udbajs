@@ -30,6 +30,7 @@ positionalFlag ->
 default -> dqstring {% d => ({ default: d[0], type: 'string' }) %}
   | sqstring {% d => ({ default: d[0], type: 'string' }) %}
   | word {% d => ({ default: d[0], type: 'string' }) %}
+  | null {% v({ default: '', type: 'string' }) %}
 
 array -> "*" {% v({ type: 'array', default: [] }) %}
 
@@ -37,6 +38,6 @@ alias -> null
   | [a-zA-Z0-9] "|" {% d => ({ alias: d[0] }) %}
 
 description -> null
-  | _ ":" _ .:* {% d => ({ description: d[3].join('').trim() })%}
+  | _ ":" _ [^}]:* {% d => ({ description: d[3].join('').trim() })%}
 
 word -> [a-zA-Z] [a-zA-Z0-9-]:* {% d => `${d[0]}${d[1].join('')}` %}

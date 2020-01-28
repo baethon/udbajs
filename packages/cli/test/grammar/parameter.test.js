@@ -30,6 +30,8 @@ describe('Param parser', () => {
     ['--foo="foo bar"', { name: 'foo', type: 'string', default: 'foo bar', optional: true }],
     ['--foo=\'foo bar\'', { name: 'foo', type: 'string', default: 'foo bar', optional: true }],
     ['--foo', { name: 'foo', type: 'boolean', default: false, optional: true }],
+    ['--foo=', { name: 'foo', type: 'string', default: '', optional: true }],
+    ['--f|foo=', { name: 'foo', type: 'string', default: '', optional: true, alias: 'f' }],
     ['--foo=*', { name: 'foo', type: 'array', default: [], optional: true }],
     ['--f|foo=bar', { name: 'foo', type: 'string', default: 'bar', optional: true, alias: 'f' }],
     ['--f|foo="foo bar"', { name: 'foo', type: 'string', default: 'foo bar', optional: true, alias: 'f' }],
