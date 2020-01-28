@@ -52,6 +52,14 @@ describe('SignatureParser', () => {
       ['foo {--hello=* : Say hi} {--bar}', {
         hello: Joi.array().items(String).default([]).optional().description('Say hi'),
         bar: Joi.boolean().default(false).optional()
+      }],
+      [`
+        foo
+          {--hello}
+          {bar}
+      `, {
+        hello: Joi.boolean().default(false).optional(),
+        bar: Joi.string().required()
       }]
     ]
 

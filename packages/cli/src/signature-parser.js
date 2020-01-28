@@ -49,7 +49,7 @@ class SignatureParser {
 
   _parseSignature (signature) {
     const parser = new Parser(Grammar.fromCompiled(commandGrammar))
-    parser.feed(signature)
+    parser.feed(signature.replace('\n', '').trim())
     const [[name, parameters]] = parser.results
 
     return { name, parameters }
