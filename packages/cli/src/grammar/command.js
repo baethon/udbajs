@@ -9,8 +9,15 @@
       : carry,
     {}
   )
+  const always = opts => _ => opts
+  const p = (...args) => (value) => args.reduce((carry, fn) => fn(carry), value)
+  const rightMerge = (data) => d => ({ ...d, ...data })
+  const leftMerge = (data) => d => ({ ...data, ...d })
 
-  const v = opts => d => opts
+  const addOrder = list => list.map((item, i) => ({
+    ...item,
+    order: i
+  }))
   var grammar = {
     Lexer: undefined,
     ParserRules: [
@@ -54,19 +61,19 @@
       },
       { name: 'parameter', symbols: ['flag', 'alias', 'name', { literal: '=' }, 'default', 'description'], postprocess: joinOpts },
       { name: 'parameter', symbols: ['flag', 'alias', 'name', { literal: '=' }, 'array', 'description'], postprocess: joinOpts },
-      { name: 'parameter', symbols: ['flag', 'alias', 'name', 'description'], postprocess: d => ({ ...joinOpts(d), type: 'boolean', default: false }) },
-      { name: 'parameter', symbols: ['name', 'positionalFlag', 'description'], postprocess: d => ({ type: 'string', ...joinOpts(d) }) },
+      { name: 'parameter', symbols: ['flag', 'alias', 'name', 'description'], postprocess: p(joinOpts, rightMerge({ type: 'boolean', default: false })) },
+      { name: 'parameter', symbols: ['name', 'positionalFlag', 'description'], postprocess: p(joinOpts, leftMerge({ type: 'string', positional: true })) },
       { name: 'flag$string$1', symbols: [{ literal: '-' }, { literal: '-' }], postprocess: function joiner (d) { return d.join('') } },
-      { name: 'flag', symbols: ['flag$string$1'], postprocess: v({ optional: true }) },
+      { name: 'flag', symbols: ['flag$string$1'], postprocess: always({ optional: true, positional: false }) },
       { name: 'name', symbols: ['word'], postprocess: d => ({ name: d.join('') }) },
       { name: 'positionalFlag', symbols: [] },
-      { name: 'positionalFlag', symbols: [{ literal: '?' }], postprocess: v({ optional: true }) },
+      { name: 'positionalFlag', symbols: [{ literal: '?' }], postprocess: always({ optional: true }) },
       { name: 'positionalFlag', symbols: ['array'], postprocess: id },
       { name: 'default', symbols: ['dqstring'], postprocess: d => ({ default: d[0], type: 'string' }) },
       { name: 'default', symbols: ['sqstring'], postprocess: d => ({ default: d[0], type: 'string' }) },
       { name: 'default', symbols: ['word'], postprocess: d => ({ default: d[0], type: 'string' }) },
-      { name: 'default', symbols: [], postprocess: v({ default: '', type: 'string' }) },
-      { name: 'array', symbols: [{ literal: '*' }], postprocess: v({ type: 'array', default: [] }) },
+      { name: 'default', symbols: [], postprocess: always({ default: '', type: 'string' }) },
+      { name: 'array', symbols: [{ literal: '*' }], postprocess: always({ type: 'array', default: [] }) },
       { name: 'alias', symbols: [] },
       { name: 'alias', symbols: [/[a-zA-Z0-9]/, { literal: '|' }], postprocess: d => ({ alias: d[0] }) },
       { name: 'description', symbols: [] },
@@ -78,7 +85,7 @@
       { name: 'word', symbols: [/[a-zA-Z]/, 'word$ebnf$1'], postprocess: d => `${d[0]}${d[1].join('')}` },
       { name: 'command$ebnf$1', symbols: [] },
       { name: 'command$ebnf$1', symbols: ['command$ebnf$1', 'commandParameter'], postprocess: function arrpush (d) { return d[0].concat([d[1]]) } },
-      { name: 'command', symbols: ['commandName', '__', 'command$ebnf$1'], postprocess: d => ([d[0], d[2]]) },
+      { name: 'command', symbols: ['commandName', '__', 'command$ebnf$1'], postprocess: d => ([d[0], addOrder(d[2])]) },
       { name: 'command', symbols: ['commandName'], postprocess: d => ([d[0], []]) },
       { name: 'commandParameter', symbols: [{ literal: '{' }, '_', 'parameter', '_', { literal: '}' }, '_'], postprocess: d => d[2] },
       { name: 'commandName', symbols: ['word'], postprocess: id },
