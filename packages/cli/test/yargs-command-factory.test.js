@@ -1,4 +1,4 @@
-const { describe, test } = require('mocha')
+const { describe, test, it } = require('mocha')
 const yargs = require('yargs')
 const chai = require('chai')
 const SignatureParser = require('../src/signature-parser')
@@ -89,5 +89,9 @@ describe('Yargs command factory', () => {
 
       expect().to.be.a.command(_yargs, name, dummy.description, parameters)
     })
+  })
+
+  it('appends handler to the command', () => {
+
   })
 })

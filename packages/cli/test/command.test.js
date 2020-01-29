@@ -1,7 +1,7 @@
 const { describe, it } = require('mocha')
 const chai = require('chai')
 const SignatureParser = require('../src/signature-parser')
-const DummyCommand = require('./stubs/dummy-command.command')
+const { DummyCommand } = require('./stubs')
 
 const { expect } = chai
 

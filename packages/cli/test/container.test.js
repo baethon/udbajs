@@ -2,8 +2,7 @@ const { describe, it, beforeEach } = require('mocha')
 const chai = require('chai')
 const path = require('path')
 const Container = require('../src/container')
-const DummyCommand = require('./stubs/dummy-command.command')
-const handleStub = require('./stubs/handler')
+const { DummyCommand, handler: handleStub } = require('./stubs')
 
 chai.use(require('chai-sinon'))
 const { expect } = chai
