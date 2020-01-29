@@ -2,7 +2,7 @@ const { describe, it, beforeEach } = require('mocha')
 const chai = require('chai')
 const path = require('path')
 const Container = require('../src/container')
-const DummyCommand  = require('./stubs/dummy-command.command')
+const DummyCommand = require('./stubs/dummy-command.command')
 const handleStub = require('./stubs/handler')
 
 chai.use(require('chai-sinon'))
@@ -22,7 +22,7 @@ describe('Container', () => {
       expect(container.commands.get('dummy')).to.be.instanceOf(DummyCommand)
     })
 
-    it(`forbids adding classes that don't inherit from Command`, () => {
+    it('forbids adding classes that don\'t inherit from Command', () => {
       expect(() => {
         container.add(class {})
       }).to.throw('Only descendants of Command can be added')
@@ -40,7 +40,7 @@ describe('Container', () => {
 
       expect(handleStub).to.have.been.calledWith({
         name: 'Jon',
-        hello: true,
+        hello: true
       })
     })
 
@@ -54,7 +54,7 @@ describe('Container', () => {
   describe('load()', () => {
     it('loads commands using glob patterns', async () => {
       await container.load(path.join(__dirname, 'stubs', '*.command.js'))
-      expect(container.commands.get('dummy')).to.exist
+      expect(container.commands.get('dummy')).to.exist // eslint-disable-line
     })
   })
 })

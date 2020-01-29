@@ -38,7 +38,7 @@ class Container {
     return instance.handle(args)
   }
 
-  async load(pattern) {
+  async load (pattern) {
     const paths = await globby(pattern)
 
     paths.forEach(path => {

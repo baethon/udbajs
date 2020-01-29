@@ -1,11 +1,11 @@
 const SignatureParser = require('./signature-parser')
 
 class Command {
-  static get signature() {
+  static get signature () {
     throw new Error('Implementation missing')
   }
 
-  static get description() {
+  static get description () {
     throw new Error('Implementation missing')
   }
 
@@ -27,7 +27,7 @@ class Command {
    * @return {Promise<void>}
    * @abstract
    */
-  async handle(parameters) {
+  async handle (parameters) {
   }
 }
 

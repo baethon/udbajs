@@ -1,4 +1,4 @@
-const { describe, it, test } = require('mocha')
+const { describe, test } = require('mocha')
 const chai = require('chai')
 const SignatureParser = require('../src/signature-parser')
 const testCases = require('./grammar/command.test-cases')
