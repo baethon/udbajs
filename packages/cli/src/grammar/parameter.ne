@@ -8,31 +8,33 @@ const joinOpts = d => d.reduce(
     : carry,
   {}
 );
-
-const v = opts => d => opts;
+const always = opts => _ => opts;
+const p = (...args) => (value) => args.reduce((carry, fn) => fn(carry), value)
+const rightMerge = (data) => d => ({ ...d, ...data })
+const leftMerge = (data) => d => ({ ...data, ...d })
 %}
 
 parameter -> 
   flag alias name "=" default description {% joinOpts %}
   | flag alias name "=" array description  {% joinOpts %}
-  | flag alias name description {% d => ({ ...joinOpts(d), type: 'boolean', default: false }) %}
-  | name positionalFlag description {% d => ({ type: 'string', ...joinOpts(d) }) %}
+  | flag alias name description {% p(joinOpts, rightMerge({ type: 'boolean', default: false })) %}
+  | name positionalFlag description {% p(joinOpts, leftMerge({ type: 'string', positional: true })) %}
 
-flag -> "--" {% v({ optional: true }) %}
+flag -> "--" {% always({ optional: true, positional: false }) %}
 
 name -> word {% d => ({ name: d.join('') }) %}
 
 positionalFlag -> 
   null
-  | "?" {% v({ optional: true }) %}
+  | "?" {% always({ optional: true }) %}
   | array {% id %}
 
 default -> dqstring {% d => ({ default: d[0], type: 'string' }) %}
   | sqstring {% d => ({ default: d[0], type: 'string' }) %}
   | word {% d => ({ default: d[0], type: 'string' }) %}
-  | null {% v({ default: '', type: 'string' }) %}
+  | null {% always({ default: '', type: 'string' }) %}
 
-array -> "*" {% v({ type: 'array', default: [] }) %}
+array -> "*" {% always({ type: 'array', default: [] }) %}
 
 alias -> null 
   | [a-zA-Z0-9] "|" {% d => ({ alias: d[0] }) %}
