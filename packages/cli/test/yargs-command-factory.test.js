@@ -1,4 +1,4 @@
-const { describe, test, it } = require('mocha')
+const { describe, test, it, beforeEach } = require('mocha')
 const yargs = require('yargs')
 const chai = require('chai')
 const sinon = require('sinon')
@@ -25,8 +25,8 @@ chai.use(({ Assertion, AssertionError }) => {
       return (!optional)
         ? `<${name}>`
         : (type === 'array')
-        ? `[${name}...]`
-        : `[${name}]`
+          ? `[${name}...]`
+          : `[${name}]`
     }))
 
     const checkRegex = new RegExp(signatureParts.join(' '))
@@ -93,6 +93,7 @@ describe('Yargs command factory', () => {
           static get signature () {
             return signature
           }
+
           static get description () {
             return 'Command description'
           }
@@ -109,11 +110,11 @@ describe('Yargs command factory', () => {
     factory(_yargs, new DummyCommand())
 
     const { result } = checkOutput(() => _yargs.wrap(null).parse('dummy Jon --active'), ['./test'])
-    
+
     expect(result._promise).to.be.instanceOf(Promise)
     expect(handler).to.have.been.calledWith(sinon.match({
       name: 'Jon',
-      active: true,
+      active: true
     }))
   })
 })

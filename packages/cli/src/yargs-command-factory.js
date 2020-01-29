@@ -1,6 +1,3 @@
-const Command = require('../src/command')
-const SignatureParser = require('../src/signature-parser')
-
 /**
  * @param {SignatureParser} parsedSignature
  * @return {String}
@@ -13,8 +10,8 @@ const getCommandSignature = (parsedSignature) => {
     return (!optional)
       ? `<${name}>`
       : (type === 'array')
-      ? `[${name}...]`
-      : `[${name}]`
+        ? `[${name}...]`
+        : `[${name}]`
   }))
 
   return parts.join(' ')
@@ -38,7 +35,7 @@ const defineParameters = parameters => yargs => {
 }
 
 /**
- * @param {typeof=import('yargs')} yargs
+ * @param {Object} yargs
  * @param {Command} command
  */
 module.exports = (yargs, command) => {
