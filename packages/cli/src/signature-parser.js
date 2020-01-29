@@ -1,39 +1,5 @@
-const Joi = require('@hapi/joi')
 const { Parser, Grammar } = require('nearley')
 const commandGrammar = require('./grammar/command')
-
-const paramToJoiRule = (input) => {
-  const {
-    name,
-    optional = false,
-    type = 'string',
-    description = null,
-    default: defaultValue = undefined
-  } = input
-  let rule = (type === 'array')
-    ? Joi.array().items(String).default([])
-    : (type === 'boolean')
-      ? Joi.boolean()
-      : Joi.string()
-
-  if (!optional && type !== 'array') {
-    rule = rule.required()
-  } else {
-    rule = rule.optional()
-  }
-
-  if (defaultValue !== undefined) {
-    rule = rule.default(defaultValue)
-  }
-
-  if (description) {
-    rule = rule.description(description)
-  }
-
-  return {
-    [name]: rule
-  }
-}
 
 class SignatureParser {
   /**
@@ -65,15 +31,12 @@ class SignatureParser {
   }
 
   /**
-   * Get command rules
+   * Get commands parameters
    *
-   * @return {Joi}
+   * @return {Object[]}
    */
-  get rules () {
-    return this._parameters.reduce(
-      (joiObject, param) => joiObject.append(paramToJoiRule(param)),
-      Joi.object()
-    )
+  get parameters () {
+    return this._parameters
   }
 }
 
