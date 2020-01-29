@@ -1,3 +1,4 @@
+const globby = require('globby')
 const BaseCommand = require('./command')
 
 class Container {
@@ -35,6 +36,14 @@ class Container {
     }
 
     return instance.handle(args)
+  }
+
+  async load(pattern) {
+    const paths = await globby(pattern)
+
+    paths.forEach(path => {
+      this.add(require(path))
+    })
   }
 }
 

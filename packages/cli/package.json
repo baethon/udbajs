@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "foreach-cli": "^1.8.1",
+    "globby": "^11.0.0",
     "nearley": "^2.19.1"
   },
   "lint-staged": {

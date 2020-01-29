@@ -1,5 +1,6 @@
 const { describe, it, beforeEach } = require('mocha')
 const chai = require('chai')
+const path = require('path')
 const Container = require('../src/container')
 const DummyCommand  = require('./stubs/dummy-command.command')
 const handleStub = require('./stubs/handler')
@@ -47,6 +48,13 @@ describe('Container', () => {
       container.call('foo')
         .then(() => done(new Error('call() should fail')))
         .catch(() => done())
+    })
+  })
+
+  describe('load()', () => {
+    it('loads commands using glob patterns', async () => {
+      await container.load(path.join(__dirname, 'stubs', '*.command.js'))
+      expect(container.commands.get('dummy')).to.exist
     })
   })
 })
