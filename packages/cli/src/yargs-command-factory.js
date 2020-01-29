@@ -1,3 +1,4 @@
+const Command = require('../src/command')
 const SignatureParser = require('../src/signature-parser')
 
 /**
@@ -38,15 +39,15 @@ const defineParameters = parameters => yargs => {
 
 /**
  * @param {typeof=import('yargs')} yargs
- * @param {Object} options
- * @param {SignatureParser} options.parsedSignature
- * @param {String} options.description
+ * @param {Command} command
  */
-module.exports = (yargs, { parsedSignature, description }) => {
+module.exports = (yargs, command) => {
   yargs.command(
-    getCommandSignature(parsedSignature),
-    description,
-    defineParameters(parsedSignature.parameters),
-    () => {}
+    getCommandSignature(command.parsedSignature),
+    command.constructor.description,
+    defineParameters(command.parsedSignature.parameters),
+    (argv) => {
+      argv._promise = command.handle(argv)
+    }
   )
 }

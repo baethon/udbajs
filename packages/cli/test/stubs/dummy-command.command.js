@@ -3,7 +3,7 @@ const handler = require('./handler')
 
 class DummyCommand extends Command {
   static get signature () {
-    return 'dummy {--hello} {name}'
+    return 'dummy {name} {--hello}'
   }
 
   static get description () {

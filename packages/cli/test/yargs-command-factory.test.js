@@ -1,11 +1,14 @@
 const { describe, test, it } = require('mocha')
 const yargs = require('yargs')
 const chai = require('chai')
-const SignatureParser = require('../src/signature-parser')
+const sinon = require('sinon')
+const Command = require('../src/command')
 const factory = require('../src/yargs-command-factory')
 const testCases = require('./grammar/command.test-cases')
 const { checkOutput } = require('./utils')
+const { DummyCommand, handler } = require('./stubs')
 
+chai.use(require('chai-sinon'))
 const { expect } = chai
 
 chai.use(({ Assertion, AssertionError }) => {
@@ -78,20 +81,39 @@ chai.use(({ Assertion, AssertionError }) => {
 })
 
 describe('Yargs command factory', () => {
-  testCases.forEach(([signature, name, parameters]) => {
-    test(`[${signature}]`, () => {
-      const _yargs = yargs()
-      const dummy = {
-        parsedSignature: new SignatureParser(signature),
-        description: 'Command description',
-      }
-      factory(_yargs, dummy)
+  beforeEach(() => {
+    handler.reset()
+  })
 
-      expect().to.be.a.command(_yargs, name, dummy.description, parameters)
+  describe('params definitions', () => {
+    testCases.forEach(([signature, name, parameters]) => {
+      test(`[${signature}]`, () => {
+        const _yargs = yargs()
+        const Dummy = class extends Command {
+          static get signature () {
+            return signature
+          }
+          static get description () {
+            return 'Command description'
+          }
+        }
+        factory(_yargs, new Dummy())
+
+        expect().to.be.a.command(_yargs, name, Dummy.description, parameters)
+      })
     })
   })
 
   it('appends handler to the command', () => {
+    const _yargs = yargs()
+    factory(_yargs, new DummyCommand())
 
+    const { result } = checkOutput(() => _yargs.wrap(null).parse('dummy Jon --active'), ['./test'])
+    
+    expect(result._promise).to.be.instanceOf(Promise)
+    expect(handler).to.have.been.calledWith(sinon.match({
+      name: 'Jon',
+      active: true,
+    }))
   })
 })
