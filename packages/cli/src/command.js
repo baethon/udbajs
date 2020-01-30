@@ -9,15 +9,19 @@ class Command {
     throw new Error('Implementation missing')
   }
 
-  constructor () {
-    this._parsedSignature = new SignatureParser(this.constructor.signature)
-  }
-
   /**
    * @return {SignatureParser}
    */
-  get parsedSignature () {
-    return this._parsedSignature
+  static get parsedSignature () {
+    const parsedSignature = new SignatureParser(this.signature)
+
+    // memoize the parsedSignature
+    Object.defineProperty(this, 'parsedSignature', {
+      get: () => parsedSignature,
+      enumerable: true
+    })
+
+    return parsedSignature
   }
 
   /**

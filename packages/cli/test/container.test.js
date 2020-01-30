@@ -18,7 +18,7 @@ describe('Container', () => {
   describe('add()', () => {
     it('allows to add a command', () => {
       container.add(DummyCommand)
-      expect(container.commands.get('dummy')).to.be.instanceOf(DummyCommand)
+      expect(container.commands.get('dummy')).to.equal(DummyCommand)
     })
 
     it('forbids adding classes that don\'t inherit from Command', () => {

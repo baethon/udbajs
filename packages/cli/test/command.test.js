@@ -7,7 +7,6 @@ const { expect } = chai
 
 describe('Command', () => {
   it('parses signature', () => {
-    const instance = new DummyCommand()
-    expect(instance.parsedSignature).to.eql(new SignatureParser(DummyCommand.signature))
+    expect(DummyCommand.parsedSignature).to.eql(new SignatureParser(DummyCommand.signature))
   })
 })

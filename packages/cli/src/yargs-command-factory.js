@@ -40,10 +40,11 @@ const defineParameters = parameters => yargs => {
  * @param {Command} command
  */
 module.exports = (yargs, command) => {
+  const { constructor } = command
   yargs.command(
-    getCommandSignature(command.parsedSignature),
-    command.constructor.description,
-    defineParameters(command.parsedSignature.parameters),
+    getCommandSignature(constructor.parsedSignature),
+    constructor.description,
+    defineParameters(constructor.parsedSignature.parameters),
     (argv) => {
       argv._promise = command.handle(argv)
     }

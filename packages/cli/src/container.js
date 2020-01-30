@@ -18,22 +18,22 @@ class Container {
       throw new Error('Only descendants of Command can be added')
     }
 
-    const instance = new Command()
-    const { parsedSignature } = instance
-    this._commands.set(parsedSignature.command, instance)
+    this._commands.set(Command.parsedSignature.command, Command)
   }
 
   /**
-   * @param {String} command
+   * @param {String} name
    * @param {Object} [args]
    * @return {Promise<void>}
    */
-  async call (command, args = {}) {
-    const instance = this.commands.get(command)
+  async call (name, args = {}) {
+    const Command = this.commands.get(name)
 
-    if (!instance) {
-      throw new Error(`Couldn't find command [${command}]`)
+    if (!Command) {
+      throw new Error(`Couldn't find command [${name}]`)
     }
+
+    const instance = new Command()
 
     return instance.handle(args)
   }
