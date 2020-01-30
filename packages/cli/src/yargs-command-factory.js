@@ -19,13 +19,14 @@ const getCommandSignature = (parsedSignature) => {
 
 const defineParameters = parameters => yargs => {
   parameters.forEach(options => {
-    const { name, positional, optional, type, description, default: defaultValue } = options
+    const { name, positional, optional, type, description, default: defaultValue, alias } = options
     const method = positional ? 'positional' : 'option'
     const commandParam = yargs[method](name, {
       description,
       default: defaultValue,
       required: !optional,
-      ...(type !== 'array' && { type })
+      ...(type !== 'array' && { type }),
+      ...(alias && { alias })
     })
 
     if (type === 'array') {

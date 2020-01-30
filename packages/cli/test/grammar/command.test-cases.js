@@ -10,5 +10,9 @@ module.exports = [
   ['hello {--active : Only active} {--bar}', 'hello', [
     { name: 'active', optional: true, type: 'boolean', description: 'Only active', default: false, positional: false, order: 0 },
     { name: 'bar', optional: true, type: 'boolean', default: false, positional: false, order: 1 }
+  ]],
+  ['hello {--x|active : Only active} {--bar}', 'hello', [
+    { name: 'active', optional: true, type: 'boolean', description: 'Only active', default: false, positional: false, order: 0, alias: 'x' },
+    { name: 'bar', optional: true, type: 'boolean', default: false, positional: false, order: 1 }
   ]]
 ]

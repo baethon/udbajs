@@ -38,24 +38,27 @@ chai.use(({ Assertion, AssertionError }) => {
   }
 
   const verifyParameters = (commandOutput, parameters) => {
-    const lines = parameters.map((options) => {
-      const { name, type, optional, description = '', default: defaultValue, positional } = options
-      const requiredString = (!optional)
-        ? '\\s*\\[required\\]'
-        : ''
-      const defaultString = (!defaultValue)
-        ? ''
-        : `\\s*\\[default: ${JSON.stringify(defaultValue)}\\]`
+    const linePatterns = parameters.map((options) => {
+      const { name, type, optional, description = '', default: defaultValue, positional, alias = null } = options
       const prefix = positional ? '' : '--'
+      const pass = /./
+      const r = pattern => new RegExp(pattern)
 
-      return new RegExp(`${prefix}${name}\\s+${description}\\s*\\[${type}\\]${requiredString}${defaultString}`)
+      return [
+        r(`${prefix}${name}`),
+        (alias ? r(`-${alias}`) : pass),
+        r(description),
+        r(`\\[${type}\\]`),
+        (!optional ? r('\\[required\\]') : pass),
+        (defaultValue ? r(`\\[default: ${JSON.stringify(defaultValue)}\\]`) : pass)
+      ]
     })
 
-    lines.forEach(regex => {
-      const check = commandOutput.some(line => regex.test(line))
+    linePatterns.forEach(patterns => {
+      const check = commandOutput.some(line => patterns.every(regex => regex.test(line)))
 
       if (!check) {
-        throw new AssertionError(`Missing parameter matching: ${regex}`)
+        throw new AssertionError(`Missing parameter matching: ${patterns.join(', ')}`)
       }
     })
   }
