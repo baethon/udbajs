@@ -18,6 +18,10 @@ chai.use(({ Assertion, AssertionError }) => {
     return filtered
   }
 
+  const error = (message, commandOutput) => {
+    throw new AssertionError(`${message}\n\nCommand output:\n${commandOutput.join('\n')}`)
+  }
+
   const verifyCommand = (commandOutput, name, positionals) => {
     const signatureParts = [name].concat(positionals.map(options => {
       const { name, type, optional } = options
@@ -33,7 +37,7 @@ chai.use(({ Assertion, AssertionError }) => {
     const check = commandOutput.some(line => checkRegex.test(line))
 
     if (!check) {
-      throw new AssertionError(`The command signature does not match: ${checkRegex}`)
+      error(`The command signature does not match: ${checkRegex}`, commandOutput)
     }
   }
 
@@ -43,14 +47,16 @@ chai.use(({ Assertion, AssertionError }) => {
       const prefix = positional ? '' : '--'
       const pass = /./
       const r = pattern => new RegExp(pattern)
+      const escapedDefaultValue = defaultValue && JSON.stringify(defaultValue)
+        .replace(/([\[\]])/g, '\\$1') // eslint-disable-line
 
       return [
         r(`${prefix}${name}`),
         (alias ? r(`-${alias}`) : pass),
-        r(description),
+        description ? r(description) : pass,
         r(`\\[${type}\\]`),
         (!optional ? r('\\[required\\]') : pass),
-        (defaultValue ? r(`\\[default: ${JSON.stringify(defaultValue)}\\]`) : pass)
+        (escapedDefaultValue ? r(`\\[default: ${escapedDefaultValue}\\]`) : pass)
       ]
     })
 
@@ -58,7 +64,7 @@ chai.use(({ Assertion, AssertionError }) => {
       const check = commandOutput.some(line => patterns.every(regex => regex.test(line)))
 
       if (!check) {
-        throw new AssertionError(`Missing parameter matching: ${patterns.join(', ')}`)
+        error(`Missing parameter matching: ${patterns.join(', ')}`, commandOutput)
       }
     })
   }
@@ -68,7 +74,7 @@ chai.use(({ Assertion, AssertionError }) => {
     const check = commandOutput.some(line => regex.test(line))
 
     if (!check) {
-      throw new AssertionError(`Missing command description: ${description}`)
+      error(`Missing command description: ${description}`, commandOutput)
     }
   }
 
