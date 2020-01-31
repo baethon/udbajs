@@ -1,7 +1,7 @@
 const globby = require('globby')
 const yargs = require('yargs')
 const BaseCommand = require('./command')
-const factory = require('./yargs-command-factory')
+const factory = require('./command-factory')
 
 const isCommand = Command => Command.prototype instanceof BaseCommand
 
