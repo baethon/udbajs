@@ -1,6 +1,11 @@
+[![Build Status](https://travis-ci.org/baethon/udbajs.svg?branch=master)](https://travis-ci.org/baethon/udbajs) 
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
 ## @baethon/udba-cli
 
 Minimalistic CLI interface built on top of [yargs](http://yargs.js.org/). It allows building CLI applications inside an existing app.
+
+![Command example](https://raw.githubusercontent.com/baethon/udbajs/master/packages/cli/example.png)
 
 ## Installation
 
