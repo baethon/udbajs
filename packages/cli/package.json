@@ -1,5 +1,5 @@
 {
-  "name": "@udba/cli",
+  "name": "@baethon/udba-cli",
   "version": "1.0.0",
   "description": "Minimalistic CLI app framework",
   "main": "index.js",
