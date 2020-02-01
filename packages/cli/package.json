@@ -36,5 +36,6 @@
   },
   "files": [
     "src/**/*.js"
-  ]
+  ],
+  "gitHead": "3e6829c6b65dc7bbc3a87c1808f8c074f7220f95"
 }
