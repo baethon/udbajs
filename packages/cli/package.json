@@ -1,6 +1,6 @@
 {
   "name": "@baethon/udba-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Minimalistic CLI app framework",
   "keywords": [
     "cli",
