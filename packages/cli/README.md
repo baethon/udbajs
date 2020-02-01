@@ -59,6 +59,8 @@ class HelloWorld extends Command {
         console.log(`Hello ${who}!`)
     }
 }
+
+module.exports = HelloWorld
 ```
 
 Execute it:
@@ -110,16 +112,16 @@ app.add(HelloWorld)
 You can also load all commands using glob patterns.
 
 ```js
-app.load([`${__dirname}/commands/*.js`, `other/path/*.js`])
+app.load([`${__dirname}/commands/*.js`, `/other/path/*.js`])
 ```
 
-The `load()` method returns a Promise. Make sure to wait until it resolves. `load()` is compatible with [globby](https://github.com/sindresorhus/globby) API.
+The `load()` method returns a Promise. Make sure to wait until it resolves. `load()` is compatible with [globby](https://github.com/sindresorhus/globby) API. Make sure to provide an absolute path to the commands. Without it, package will fail to load the commands.
 
 The `Runtime` accepts only classes that extend the `Command` class.
 
 ## Command handler
 
-The `handle()` method is responsible for executing the command. As a first argument, it receives the parameters parsed by `yargs` (note, that there will be more values then defined in the _signature_). `handle()` can return a Promise. If this happens, the runtime waits for its fulfillment.
+The `handle()` method is responsible for executing the command. As a first argument, it receives the parameters parsed by `yargs` (note, that there will be more values then defined in the _signature_). `handle()` may return a Promise. If this happens, the runtime waits for its fulfillment.
 
 ## Calling commands programmatically
 
