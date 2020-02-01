@@ -2,6 +2,14 @@
   "name": "@baethon/udba-cli",
   "version": "1.0.2",
   "description": "Minimalistic CLI app framework",
+  "keywords": [
+    "cli",
+    "command",
+    "yargs",
+    "tty",
+    "terminal",
+    "console"
+  ],
   "main": "index.js",
   "author": "Radoslaw Mejer <radmen@baethon.com>",
   "license": "MIT",
