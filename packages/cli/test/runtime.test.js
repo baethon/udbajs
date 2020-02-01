@@ -33,24 +33,18 @@ describe('Runtime', () => {
       expect(handler).to.have.been.calledWith(sinon.match({ name: 'Jon', hello: true }))
     })
 
-    it.skip('should fail when given undefined options', (done) => {
-      runtime.call('dummy Jon --foo')
-        .then(() => {
-          done(new Error('Command should fail'))
-        })
-        .catch(() => {
-          done()
-        })
+    it('should fail when given undefined options', () => {
+      const result = checkOutput(() => runtime.call('dummy Jon --foo'))
+      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+
+      expect(check).to.equal(true)
     })
 
-    it.skip('should throw error when calling undefined command', (done) => {
-      runtime.call('foo')
-        .then(() => {
-          done(new Error('Runtime should throw an error'))
-        })
-        .catch(() => {
-          done()
-        })
+    it('should throw error when calling undefined command', () => {
+      const result = checkOutput(() => runtime.run('foo'))
+      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+
+      expect(check).to.equal(true)
     })
   })
 
@@ -70,9 +64,11 @@ describe('Runtime', () => {
       expect(handler).to.have.been.calledWith(sinon.match({ name: 'Jon', hello: false }))
     })
 
-    it.skip('should fail when given undefined options', () => {
-      const result = checkOutput(() => runtime.call('dummy Jon --foo'))
-      expect(result.errors).to.have.lengthOf.greaterThan(0)
+    it('should fail when given undefined options', () => {
+      const result = checkOutput(() => runtime.run('dummy Jon --foo'))
+      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+
+      expect(check).to.equal(true)
     })
   })
 })

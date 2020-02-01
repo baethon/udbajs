@@ -8,6 +8,7 @@ const isCommand = Command => Command.prototype instanceof BaseCommand
 class Runtime {
   constructor () {
     this._yargs = yargs()
+      .strict()
   }
 
   add (Command) {
