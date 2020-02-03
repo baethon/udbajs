@@ -7,10 +7,22 @@ const factory = require('./command-factory')
 const cliDebug = debug('udba:cli')
 const isCommand = Command => Command.prototype instanceof BaseCommand
 
+/**
+ * @typedef {Object} RuntimeOptions
+ * @property {String|String[]} [commands] glob pattern (or list of patterns) for command files
+ * @property {Object} [glob] options passed to globby
+ */
+
 class Runtime {
-  constructor () {
+
+  /**
+   * @param {RuntimeOptions} options
+   */
+  constructor (options) {
     this._yargs = yargs()
       .strict()
+
+    this._options = options
   }
 
   add (Command) {
@@ -23,12 +35,10 @@ class Runtime {
   }
 
   /**
-   * @param {String|String[]} pattern
-   * @param {Object} [options] globby options
    * @return {Promise<void>}
    */
-  async load (pattern, options = {}) {
-    const paths = await globby(pattern, options)
+  async load () {
+    const paths = await globby(this._options.commands || [], this._options.glob)
 
     cliDebug('Attempting to load following files:', paths)
 

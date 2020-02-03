@@ -22,9 +22,11 @@ Then create your CLI binary (`./cli`; ideally, in the root folder):
 
 const { Runtime } = require('@baethon/udba-cli')
 
-const app = new Runtime()
+const app = new Runtime({
+    commands: `${__dirname}/commands/**/*.js`
+})
 
-app.load(`${__dirname}/commands/**/*.js`)  
+app.load()  
     .then(() => app.run(process.argv.slice(2)))  
     .then(() => app.exit())  
     .catch((error) => {    
@@ -99,23 +101,15 @@ All flags are optional.
 
 - flag alias: `{--p|paramName}`
 
-## Loading commands
+## Adding single command
 
-You can add a single command using the `add()` method.
+By default, the runtime will load all `commands` from selected directories. It's possible to add a single command using `add()`.
 
 ```js
 const HelloWorld = require('./commands/hello-world.command.js')
 
 app.add(HelloWorld)
 ```
-
-You can also load all commands using glob patterns.
-
-```js
-app.load([`${__dirname}/commands/*.js`, `/other/path/*.js`])
-```
-
-The `load()` method returns a Promise. Make sure to wait until it resolves. `load()` is compatible with [globby](https://github.com/sindresorhus/globby) API. Make sure to provide an absolute path to the commands. Without it, package will fail to load the commands.
 
 The `Runtime` accepts only classes that extend the `Command` class.
 
@@ -130,8 +124,10 @@ It's possible to run selected commands from your application. This requires havi
 ```js
 const { Runtime } = require('@baethon/udba-cli')
 
-const app = new Runtime()
-app.load(`${__dirname}/commands/**/*.js`)
+const app = new Runtime({
+    commands: `${__dirname}/commands/**/*.js`
+})
+app.load()
 
 module.exports = app
 ```
@@ -144,7 +140,7 @@ const cliApp = require('./cli-runtime.js')
 cliApp.call('hello --who=Jon')
 ```
 
-Please mind that the runtime setup example is simplified. The app should wait for the `load()` method to finish.
+Please mind that the example is simplified. The app should wait for the `load()` method to finish.
 
 ## Acknowledgements
 

@@ -14,8 +14,10 @@ describe('Runtime', () => {
   beforeEach(async () => {
     handler.reset()
 
-    runtime = new Runtime()
-    await runtime.load(`${__dirname}/stubs/dummy-command.command.js`)
+    runtime = new Runtime({
+      commands: `${__dirname}/stubs/dummy-command.command.js`
+    })
+    await runtime.load()
 
     return runtime
   })
