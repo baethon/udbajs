@@ -1,8 +1,10 @@
 const globby = require('globby')
 const yargs = require('yargs')
+const debug = require('debug')
 const BaseCommand = require('./command')
 const factory = require('./command-factory')
 
+const cliDebug = debug('udba:cli')
 const isCommand = Command => Command.prototype instanceof BaseCommand
 
 class Runtime {
@@ -16,6 +18,7 @@ class Runtime {
       throw new Error('Provided command does not extend base command')
     }
 
+    cliDebug(`Adding command: ${Command.name}`)
     factory(this._yargs, new Command())
   }
 
@@ -26,6 +29,8 @@ class Runtime {
    */
   async load (pattern, options = {}) {
     const paths = await globby(pattern, options)
+
+    cliDebug('Attempting to load following files:', paths)
 
     paths.map(path => require(path))
       .filter(isCommand)
@@ -53,6 +58,8 @@ class Runtime {
    * @return {Promise<void>}
    */
   async run (parameters) {
+    cliDebug('Running yargs with following parameters:', parameters)
+
     const argv = this._yargs.demandCommand()
       .parse(parameters)
 
@@ -62,6 +69,7 @@ class Runtime {
   }
 
   exit (code = 0) {
+    cliDebug(`Terminating CLI app with code: ${code}`)
     this._yargs.exit(code)
   }
 }
