@@ -14,7 +14,6 @@ const isCommand = Command => Command.prototype instanceof BaseCommand
  */
 
 class Runtime {
-
   /**
    * @param {RuntimeOptions} options
    */
