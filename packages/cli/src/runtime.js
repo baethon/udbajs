@@ -34,14 +34,27 @@ class Runtime {
       })
   }
 
-  async call (command) {
-    const argv = this._yargs.parse(command)
-    await argv._promise
+  /**
+   * Call command using given parameters.
+   *
+   * Alias for: run()
+   *
+   * @param {String|String[]} parameters
+   * @return {Promise<void>}
+   */
+  async call (parameters) {
+    return this.run(parameters)
   }
 
-  async run (args) {
+  /**
+   * Run yargs with given parameters.
+   *
+   * @param {String|String[]} parameters
+   * @return {Promise<void>}
+   */
+  async run (parameters) {
     const argv = this._yargs.demandCommand()
-      .parse(args)
+      .parse(parameters)
 
     await argv._promise
 
