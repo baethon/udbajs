@@ -1,0 +1,40 @@
+{
+  "name": "@baethon/udba-bootstrap",
+  "version": "1.0.0",
+  "description": "Minimalistic application bootstrapping layer",
+  "keywords": [
+    "bootstrap",
+    "rc.d",
+    "app",
+    "application"
+  ],
+  "author": "Radoslaw Mejer <radmen@baethon.com>",
+  "homepage": "https://github.com/baethon/udbajs#readme",
+  "license": "MIT",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baethon/udbajs.git"
+  },
+  "scripts": {
+    "test": "mocha",
+    "precommit": "lint-staged",
+    "lint": "standard",
+    "lint:fix": "standard --fix"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix"
+    ]
+  },
+  "devDependencies": {
+    "lint-staged": "^10.0.7",
+    "mocha": "^7.0.1",
+    "sinon": "^8.1.1",
+    "standard": "^14.3.1"
+  },
+  "dependencies": {
+    "globby": "^11.0.0",
+    "p-all": "^2.1.0"
+  }
+}
