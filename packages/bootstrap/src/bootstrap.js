@@ -2,6 +2,7 @@ const os = require('os')
 const globby = require('globby')
 const path = require('path')
 const pAll = require('p-all')
+const debug = require('debug')('udba:bootstrap')
 
 const getPriority = filePath => {
   const name = path.basename(filePath)
@@ -14,6 +15,12 @@ const groupByPriority = (carry, { priority, provider }) => ({
   ...carry,
   [priority]: (carry[priority] || []).concat(provider)
 })
+
+/**
+ * @typedef ProviderPriorityList
+ * @property {Number} priority
+ * @property {Provider[]} providers
+ */
 
 class Bootstrap {
   /**
@@ -42,13 +49,16 @@ class Bootstrap {
   /**
    * Get list of providers sorted by their priority
    *
-   * @return {Array<Provider[]>}
+   * @return {ProviderPriorityList[]}
    * @private
    */
   get _sortedProviders () {
     return Object.keys(this._providers)
       .sort()
-      .map(priority => this._providers[priority])
+      .map(priority => ({
+        priority,
+        providers: this._providers[priority]
+      }))
   }
 
   /**
@@ -58,10 +68,13 @@ class Bootstrap {
    * @private
    */
   async _loadProviders () {
+    debug('loading providers')
+
     const files = await globby(
       path.join(this._providersDir, '*.js'),
       { concurrency: this._concurrency }
     )
+
     const providers = files.map(path => {
       const Provider = require(path)
 
@@ -77,7 +90,7 @@ class Bootstrap {
   /**
    * Run given method on providers respecting their priority
    *
-   * @param {Array<Provider[]>} providers
+   * @param {ProviderPriorityList[]} providers
    * @param {String} method
    * @return {Promise<void>}
    * @private
@@ -86,16 +99,20 @@ class Bootstrap {
     // make sure that the providers are executed serially by their priority
     // the inner list of providers can be executed concurrently
     await pAll(
-      providers.map(list => () => pAll(
-        list.map(
-          provider => () => {
-            if (provider[method]) {
-              return provider[method]()
+      providers.map(({ priority, providers: list }) => () => {
+        debug(`${method}(), priority: ${priority}`)
+
+        return pAll(
+          list.map(
+            provider => () => {
+              if (provider[method]) {
+                return provider[method]()
+              }
             }
-          }
-        ),
-        { concurrency: this._concurrency }
-      )),
+          ),
+          { concurrency: this._concurrency }
+        )
+      }),
       { concurrency: 1 }
     )
   }
