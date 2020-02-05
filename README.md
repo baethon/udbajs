@@ -10,3 +10,4 @@ _Ùdba_ is a [Kashubian](https://en.wikipedia.org/wiki/Kashubia) word for _idea_
 This is a monorepo for multiple packages:
 
 - [@baethon/udba-cli](https://github.com/baethon/udbajs/tree/master/packages/cli)
+- [@baethon/udba-bootstrap](https://github.com/baethon/udbajs/tree/master/packages/bootstrap)
