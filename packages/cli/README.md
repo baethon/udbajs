@@ -22,11 +22,9 @@ Then create your CLI binary (`./cli`; ideally, in the root folder):
 
 const { Runtime } = require('@baethon/udba-cli')
 
-const app = new Runtime({
-    commands: `${__dirname}/commands/**/*.js`
-})
+const app = new Runtime()
 
-app.load()  
+app.load(`${__dirname}/commands/**/*.js`)  
     .then(() => app.run(process.argv.slice(2)))  
     .then(() => app.exit())  
     .catch((error) => {    
@@ -124,10 +122,8 @@ It's possible to run selected commands from your application. This requires havi
 ```js
 const { Runtime } = require('@baethon/udba-cli')
 
-const app = new Runtime({
-    commands: `${__dirname}/commands/**/*.js`
-})
-app.load()
+const app = new Runtime()
+app.load(`${__dirname}/commands/**/*.js`)
 
 module.exports = app
 ```
