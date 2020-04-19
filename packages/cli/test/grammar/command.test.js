@@ -1,30 +1,22 @@
-const { describe, test, before, beforeEach } = require('mocha')
-const chai = require('chai')
+const test = require('ava')
 const nearley = require('nearley')
-const { compileGrammar } = require('./utils')
 const testCases = require('./command.test-cases')
 
-const { expect } = chai
+test.serial.before(t => {
+  t.context.grammar = require('../../src/grammar/command')
+})
 
-describe('Param parser', () => {
-  let parser
-  let grammar
+test.beforeEach(t => {
+  t.context.parser = new nearley.Parser(nearley.Grammar.fromCompiled(t.context.grammar))
+})
 
-  compileGrammar()
+testCases.forEach(([input, commandName, parameters]) => {
+  test(input, t => {
+    const { parser } = t.context
 
-  before(() => {
-    grammar = require('../../src/grammar/command')
-  })
+    parser.feed(input)
+    const [first] = parser.results
 
-  beforeEach(() => {
-    parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar))
-  })
-
-  testCases.forEach(([input, commandName, parameters]) => {
-    test(input, () => {
-      parser.feed(input)
-      const [first] = parser.results
-      expect(first).to.eql([commandName, parameters])
-    })
+    t.deepEqual([commandName, parameters], first)
   })
 })

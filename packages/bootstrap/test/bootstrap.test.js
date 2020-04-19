@@ -1,39 +1,35 @@
-const { describe, it, beforeEach } = require('mocha')
-const chai = require('chai')
+const test = require('ava')
 const { providerStub } = require('./stubs')
 const Bootstrap = require('../src/bootstrap')
 
-const { expect } = chai
 const mapProviderArgs = provider => provider.getCalls()
   .map(({ args }) => args)
 
-describe('Bootstrap', () => {
-  let app
+test.beforeEach(t => {
+  t.context.app = new Bootstrap(`${__dirname}/providers/`)
+  providerStub.reset()
+})
 
-  beforeEach(() => {
-    providerStub.reset()
-    app = new Bootstrap(`${__dirname}/providers/`)
-  })
+test.serial('setup() runs providers in valid order', async t => {
+  const { app } = t.context
+  await app.setup()
 
-  it('setup() runs providers in valid order', async () => {
-    await app.setup()
+  t.deepEqual(mapProviderArgs(providerStub), [
+    ['first-setup'],
+    ['second-setup'],
+    ['last-setup']
+  ])
+})
 
-    expect(mapProviderArgs(providerStub)).to.eql([
-      ['first-setup'],
-      ['second-setup'],
-      ['last-setup']
-    ])
-  })
+test.serial('shutdown() runs providers in valid order', async t => {
+  const { app } = t.context
+  await app.setup()
 
-  it('shutdown() runs providers in valid order', async () => {
-    await app.setup()
+  providerStub.reset()
+  await app.shutdown()
 
-    providerStub.reset()
-    await app.shutdown()
-
-    expect(mapProviderArgs(providerStub)).to.eql([
-      ['last-shutdown'],
-      ['first-shutdown']
-    ])
-  })
+  t.deepEqual(mapProviderArgs(providerStub), [
+    ['last-shutdown'],
+    ['first-shutdown']
+  ])
 })

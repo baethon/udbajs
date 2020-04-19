@@ -1,76 +1,70 @@
-const { describe, it, beforeEach } = require('mocha')
-const chai = require('chai')
+const test = require('ava')
 const sinon = require('sinon')
 const Runtime = require('../src/runtime')
 const { checkOutput } = require('./utils')
 const { handler } = require('./stubs')
 
-chai.use(require('chai-sinon'))
-const { expect } = chai
+test.beforeEach(async t => {
+  handler.reset()
 
-describe('Runtime', () => {
-  let runtime
-
-  beforeEach(async () => {
-    handler.reset()
-
-    runtime = new Runtime({
-      commands: `${__dirname}/stubs/dummy-command.command.js`
-    })
-    await runtime.load()
-
-    return runtime
+  t.context.runtime = new Runtime({
+    commands: `${__dirname}/stubs/dummy-command.command.js`
   })
 
-  describe('call()', () => {
-    it('allows to use command string', async () => {
-      await runtime.call('dummy Jon --hello')
+  await t.context.runtime.load()
+})
 
-      expect(handler).to.have.been.calledWith(sinon.match({ name: 'Jon', hello: true }))
-    })
+test.serial('call() | allows to use command string', async t => {
+  const { runtime } = t.context
+  await runtime.call('dummy Jon --hello')
 
-    it('allows to use array', async () => {
-      await runtime.call(['dummy', 'Jon', '--hello'])
+  t.truthy(handler.calledWith(sinon.match({ name: 'Jon', hello: true })))
+})
 
-      expect(handler).to.have.been.calledWith(sinon.match({ name: 'Jon', hello: true }))
-    })
+test.serial('call() | allows to use array', async t => {
+  const { runtime } = t.context
+  await runtime.call(['dummy', 'Jon', '--hello'])
 
-    it('should fail when given undefined options', () => {
-      const result = checkOutput(() => runtime.call('dummy Jon --foo'))
-      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+  t.truthy(handler.calledWith(sinon.match({ name: 'Jon', hello: true })))
+})
 
-      expect(check).to.equal(true)
-    })
+test.serial('call() | should fail when given undefined options', t => {
+  const { runtime } = t.context
+  const result = checkOutput(() => runtime.call('dummy Jon --foo'))
+  const check = result.errors.some(line => /Unknown argument: foo/.test(line))
 
-    it('should throw error when calling undefined command', () => {
-      const result = checkOutput(() => runtime.run('foo'))
-      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+  t.true(check)
+})
 
-      expect(check).to.equal(true)
-    })
-  })
+test.serial('call() | should throw error when calling undefined command', t => {
+  const { runtime } = t.context
+  const result = checkOutput(() => runtime.run('foo'))
+  const check = result.errors.some(line => /Unknown argument: foo/.test(line))
 
-  describe('run()', () => {
-    it('runs yargs', () => {
-      const result = checkOutput(() => runtime.run(''), ['./test'])
-      const check = result.errors.some(line => /Not enough non-option arguments/.test(line))
+  t.true(check)
+})
 
-      expect(check).to.equal(true)
-    })
+test.serial('run() | runs yargs', t => {
+  const { runtime } = t.context
+  const result = checkOutput(() => runtime.run(''), ['./test'])
+  const check = result.errors.some(line => /Not enough non-option arguments/.test(line))
 
-    it('runs selected command', async () => {
-      const result = checkOutput(() => runtime.run('dummy Jon'), ['./test'])
+  t.true(check)
+})
 
-      await result.result
+test.serial('run() | runs selected command', async t => {
+  const { runtime } = t.context
+  const result = checkOutput(() => runtime.run('dummy Jon'), ['./test'])
 
-      expect(handler).to.have.been.calledWith(sinon.match({ name: 'Jon', hello: false }))
-    })
+  await result.result
 
-    it('should fail when given undefined options', () => {
-      const result = checkOutput(() => runtime.run('dummy Jon --foo'))
-      const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+  t.truthy(handler.calledWith(sinon.match({ name: 'Jon', hello: false })))
+})
 
-      expect(check).to.equal(true)
-    })
-  })
+test.serial('run() | should fail when given undefined options', t => {
+  const { runtime } = t.context
+  const result = checkOutput(() => runtime.run('dummy Jon --foo'))
+  const check = result.errors.some(line => /Unknown argument: foo/.test(line))
+
+  t.true(check)
 })

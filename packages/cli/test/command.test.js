@@ -1,12 +1,7 @@
-const { describe, it } = require('mocha')
-const chai = require('chai')
+const test = require('ava')
 const SignatureParser = require('../src/signature-parser')
 const { DummyCommand } = require('./stubs')
 
-const { expect } = chai
-
-describe('Command', () => {
-  it('parses signature', () => {
-    expect(DummyCommand.parsedSignature).to.eql(new SignatureParser(DummyCommand.signature))
-  })
+test('parses signature', t => {
+  t.deepEqual(DummyCommand.parsedSignature, new SignatureParser(DummyCommand.signature))
 })

@@ -14,18 +14,17 @@
   "author": "Radoslaw Mejer <radmen@baethon.com>",
   "license": "MIT",
   "scripts": {
-    "test": "mocha",
+    "pretest": "npm run compile:grammar",
+    "test": "ava test/**/*.test.js",
     "compile:grammar": "foreach -g 'src/grammar/*.ne' -x './node_modules/.bin/nearleyc #{path} -o #{dir}/#{name}.js'",
     "precommit": "lint-staged",
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
   "devDependencies": {
-    "chai": "^4.2.0",
-    "chai-sinon": "^2.8.1",
+    "ava": "^3.7.1",
     "foreach-cli": "^1.8.1",
     "lint-staged": "^10.0.3",
-    "mocha": "^7.0.1",
     "sinon": "^8.1.1",
     "standard": "^14.3.1"
   },
