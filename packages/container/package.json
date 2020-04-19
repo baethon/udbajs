@@ -35,5 +35,9 @@
     "files": [
       "test/**/*.test.js"
     ]
-  }
+  },
+  "files": [ 
+    "src/**/*.js",
+    "decorators.js"
+  ]
 }
