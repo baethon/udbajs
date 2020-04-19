@@ -61,11 +61,7 @@ class Container {
       ? path.join(this.options.root, name.substring(1))
       : name
 
-    try {
-      this.bind(name, require(pathToResolve))
-    } catch (err) {
-      throw new Error('Unable to automatically bind: ', name)
-    }
+    this.bind(name, require(pathToResolve))
   }
 }
 
