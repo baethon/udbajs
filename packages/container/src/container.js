@@ -104,7 +104,8 @@ class Container {
       throw new Error('_autoBind() works only with local files')
     }
 
-    const pathToResolve = path.join(this.options.root, name.substring(1))
+    const { root = process.cwd() } = this.options
+    const pathToResolve = path.join(root, name.substring(1))
 
     this.bind(name, require(pathToResolve))
   }

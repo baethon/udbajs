@@ -52,6 +52,15 @@ test('resolve local modules | plain objects', t => {
   })
 })
 
+test('resolve local modules | without root option', t => {
+  const { container } = t.context
+
+  const config = container.make('~test/stubs/config')
+  t.deepEqual(config, {
+    hello: 'there!'
+  })
+})
+
 test('resolve local modules | selfwired objects', t => {
   const container = new Container({
     root: __dirname
