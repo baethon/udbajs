@@ -1,0 +1,43 @@
+{
+  "name": "@baethon/udba-container",
+  "version": "1.0.0",
+  "main": "index.js",
+  "description": "Simple dependency injection container",
+  "author": "Radoslaw Mejer <radmen@baethon.com>",
+  "license": "MIT",
+  "keywords": [
+    "container",
+    "dependency",
+    "ioc",
+    "dependency-injection"
+  ],
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "precommit": "lint-staged",
+    "test": "ava"
+  },
+  "devDependencies": {
+    "ava": "^3.7.1",
+    "husky": "^4.2.5",
+    "sinon": "^9.0.2",
+    "standard": "^14.3.3"
+  },
+  "dependencies": {
+    "lodash.flow": "^3.5.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix"
+    ]
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ]
+  },
+  "files": [ 
+    "src/**/*.js",
+    "decorators.js"
+  ]
+}
