@@ -45,5 +45,11 @@
   "files": [
     "src/**/*.js"
   ],
+  "standard": {
+    "ignore": [
+      "src/grammar/command.js",
+      "src/grammar/parameter.js"
+    ]
+  },
   "gitHead": "3e6829c6b65dc7bbc3a87c1808f8c074f7220f95"
 }
