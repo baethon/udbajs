@@ -1,75 +1,72 @@
-const resolver = require('./resolver')
-const utils = require('./utils')
-const curry = require('lodash.curry')
 const pipe = require('lodash.flow')
+const path = require('path')
+const utils = require('./utils')
 
-function isClass(func) {
-  return typeof func === 'function' 
-    && /^class\s/.test(Function.prototype.toString.call(func));
-}
-
-const isFunction = fn => {
-  if (typeof fn !== 'function') {
-    return false
+class Container {
+  /**
+   * @param {Object} [options]
+   * @param {String} [options.root]
+   */
+  constructor (options = {}) {
+    this.options = options
+    this.bindings = {}
   }
 
-  return !/^class\s/.test(Function.prototype.toString.call(fn))
-}
-
-const resolveFactoryFn = (objectOrFn) => {
-  if (isFunction(objectOrFn)) {
-    return objectOrFn
+  bind (name, factoryFn) {
+    this.bindings[name] = utils.resolveFactoryFn(factoryFn)
   }
 
-  if (!('$selfwire' in objectOrFn)) {
-    throw new Error(`Couldn't resolve factory function`)
-  }
+  make (name) {
+    this._autoBind(name)
 
-  const { factoryFn } = objectOrFn.$selfwire
-
-  return factoryFn
-}
-
-const container = (bindings = {}, classResolver = resolver()) => {
-  const bind = (name, factoryFn) => {
-    bindings[name] = resolveFactoryFn(factoryFn)
-  }
-
-  const make = function (name) {
-    if (name in bindings) {
-      return bindings[name](this)
+    if (name in this.bindings) {
+      return this.bindings[name](this)
     }
 
-    return makeClass(name)
+    throw new Error('Unknown binding: ', name)
   }
 
-  const makeClass = name => classResolver.createClassInstance(name, make)
-
-  const instance = curry((name, object) => bind(name, utils.always(object)))
-
-  const singleton = (name, factoryFn) => bind(
-    name,
-    pipe(
-      factoryFn,
-      utils.tap(instance(name))
-    )
-  )
-
-  const addResolveDir = function (dir) {
-    classResolver.addDir(dir)
-    return this
+  instance (name, object) {
+    this.bind(name, utils.always(object))
   }
 
-  const extend = function (name, extendFn) {
-    const bindingFn = bindings[name] || (_ => makeClass(name))
+  singleton (name, factoryFn) {
+    this.bind(name, pipe(
+      utils.resolveFactoryFn(factoryFn),
+      utils.tap(result => this.instance(name, result))
+    ))
+  }
 
-    bind(name, pipe(
+  extend (name, extendFn) {
+    this._autoBind(name)
+
+    const bindingFn = this.bindings[name]
+
+    this.bind(name, pipe(
       bindingFn,
       utils.tap(object => extendFn(object, this))
     ))
   }
 
-  return { instance, bind, make, singleton, addResolveDir, extend }
+  /**
+   * @param {String} name
+   * @private
+   */
+  _autoBind (name) {
+    if (name in this.bindings) {
+      return
+    }
+
+    const pathToResolve = (name.charAt(0) === '~')
+      ? path.join(this.options.root, name.substring(1))
+      : name
+
+    try {
+      this.bind(name, require(pathToResolve))
+    } catch (err) {
+      throw new Error('Unable to automatically bind: ', name)
+    }
+  }
 }
 
-module.exports = container
+module.exports = Container

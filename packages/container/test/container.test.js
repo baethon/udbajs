@@ -1,11 +1,11 @@
 const test = require('ava')
-const createContainer = require('../src/container')
+const { Container } = require('../')
 const sinon = require('sinon')
 const Test = require('./stubs/Test')
 const InjectTest = require('./stubs/InjectTest')
 
 test.beforeEach(t => {
-  t.context.container = createContainer()
+  t.context.container = new Container()
 })
 
 test('resolves bound instances', t => {
@@ -41,7 +41,32 @@ test('binds singleton factory', t => {
   t.is(result, container.make('test'))
 })
 
-test('Automatic class resolving | gresolves class', t => {
+test('resolve local modules | plain objects', t => {
+  const container = new Container({
+    root: __dirname
+  })
+
+  const config = container.make('~stubs/config')
+  t.deepEqual(config, {
+    hello: 'there!'
+  })
+})
+
+test('resolve local modules | selfwired objects', t => {
+  const container = new Container({
+    root: __dirname
+  })
+
+  container.singleton('random', Math.random)
+
+  const config = container.make('~stubs/selfwired-config')
+  t.deepEqual(config, {
+    hello: 'there!',
+    random: container.make('random')
+  })
+})
+
+test.skip('Automatic class resolving | resolves class', t => {
   const { container } = t.context
   container.addResolveDir(__dirname)
 
@@ -50,7 +75,7 @@ test('Automatic class resolving | gresolves class', t => {
   t.true(test instanceof Test)
 })
 
-test('Automatic class resolving | injects resolved instances', t => {
+test.skip('Automatic class resolving | injects resolved instances', t => {
   const { container } = t.context
   container.addResolveDir(__dirname)
 
@@ -101,7 +126,7 @@ test('Extending objects | allows to extend singleton', t => {
   t.truthy(spy.calledOnce)
 })
 
-test('Extending objects | allows to extend unbound class factories', t => {
+test.skip('Extending objects | allows to extend unbound class factories', t => {
   const { container } = t.context
   container.addResolveDir(__dirname)
 
