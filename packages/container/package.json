@@ -2,8 +2,15 @@
   "name": "@baethon/udba-container",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Radoslaw Mejer <radmen@radmen.info>",
+  "description": "Simple dependency injection container",
+  "author": "Radoslaw Mejer <radmen@baethon.com>",
   "license": "MIT",
+  "keywords": [
+    "container",
+    "dependency",
+    "ioc",
+    "dependency-injection"
+  ],
   "scripts": {
     "lint": "standard",
     "lint:fix": "standard --fix",
