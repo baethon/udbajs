@@ -4,8 +4,12 @@ const sinon = require('sinon')
 const Test = require('./stubs/Test')
 const InjectTest = require('./stubs/InjectTest')
 
+test.beforeEach(t => {
+  t.context.container = createContainer()
+})
+
 test('resolves bound instances', t => {
-  const container = createContainer()
+  const { container } = t.context
   const instance = {}
 
   container.instance('test', instance)
@@ -14,7 +18,7 @@ test('resolves bound instances', t => {
 })
 
 test('binds instance factories', t => {
-  const container = createContainer()
+  const { container } = t.context
   const spy = sinon.stub()
   const expectedResult = {}
 
@@ -27,7 +31,7 @@ test('binds instance factories', t => {
 })
 
 test('binds singleton factory', t => {
-  const container = createContainer()
+  const { container } = t.context
 
   container.singleton('test', Math.random)
 
@@ -38,8 +42,8 @@ test('binds singleton factory', t => {
 })
 
 test('Automatic class resolving | gresolves class', t => {
-  const container = createContainer()
-    .addResolveDir(__dirname)
+  const { container } = t.context
+  container.addResolveDir(__dirname)
 
   const test = container.make('stubs/Test')
 
@@ -47,8 +51,8 @@ test('Automatic class resolving | gresolves class', t => {
 })
 
 test('Automatic class resolving | injects resolved instances', t => {
-  const container = createContainer()
-    .addResolveDir(__dirname)
+  const { container } = t.context
+  container.addResolveDir(__dirname)
 
   container.instance('foo', 'foo')
 
@@ -60,7 +64,8 @@ test('Automatic class resolving | injects resolved instances', t => {
 })
 
 test('Extending objects | allows to extend bound objects', t => {
-  const container = createContainer()
+  const { container } = t.context
+
   const extendFn = object => {
     object.foo = 'foo'
   }
@@ -77,7 +82,8 @@ test('Extending objects | allows to extend bound objects', t => {
 })
 
 test('Extending objects | allows to extend singleton', t => {
-  const container = createContainer()
+  const { container } = t.context
+
   const spy = sinon.spy(test => {
     test.foo = Math.random()
   })
@@ -96,8 +102,8 @@ test('Extending objects | allows to extend singleton', t => {
 })
 
 test('Extending objects | allows to extend unbound class factories', t => {
-  const container = createContainer()
-    .addResolveDir(__dirname)
+  const { container } = t.context
+  container.addResolveDir(__dirname)
 
   container.extend('stubs/Test', test => {
     test.foo = 'foo'
@@ -107,4 +113,21 @@ test('Extending objects | allows to extend unbound class factories', t => {
 
   t.true(test instanceof Test)
   t.is('foo', test.foo)
+})
+
+test('binding selfwired object', t => {
+  const { container } = t.context
+  container.singleton('random', Math.random)
+
+  const selfwired = {
+    $selfwire: {
+      factoryFn: (app) => {
+        return app.make('random')
+      }
+    }
+  }
+
+  container.bind('test', selfwired)
+
+  t.is(container.make('random'), container.make('test'))
 })

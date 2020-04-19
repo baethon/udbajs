@@ -3,9 +3,36 @@ const utils = require('./utils')
 const curry = require('lodash.curry')
 const pipe = require('lodash.flow')
 
+function isClass(func) {
+  return typeof func === 'function' 
+    && /^class\s/.test(Function.prototype.toString.call(func));
+}
+
+const isFunction = fn => {
+  if (typeof fn !== 'function') {
+    return false
+  }
+
+  return !/^class\s/.test(Function.prototype.toString.call(fn))
+}
+
+const resolveFactoryFn = (objectOrFn) => {
+  if (isFunction(objectOrFn)) {
+    return objectOrFn
+  }
+
+  if (!('$selfwire' in objectOrFn)) {
+    throw new Error(`Couldn't resolve factory function`)
+  }
+
+  const { factoryFn } = objectOrFn.$selfwire
+
+  return factoryFn
+}
+
 const container = (bindings = {}, classResolver = resolver()) => {
   const bind = (name, factoryFn) => {
-    bindings[name] = factoryFn
+    bindings[name] = resolveFactoryFn(factoryFn)
   }
 
   const make = function (name) {

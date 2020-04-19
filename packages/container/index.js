@@ -1,4 +1,4 @@
-const createContainer = require('./container')
+const createContainer = require('./src/container')
 
 module.exports = {
   createContainer,
