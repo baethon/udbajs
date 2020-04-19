@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "lodash.cond": "^4.5.2",
-    "lodash.curry": "^4.1.1",
     "lodash.flow": "^3.5.0"
   },
   "lint-staged": {
