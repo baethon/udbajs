@@ -17,7 +17,6 @@
     "standard": "^14.3.3"
   },
   "dependencies": {
-    "lodash.cond": "^4.5.2",
     "lodash.flow": "^3.5.0"
   },
   "lint-staged": {
