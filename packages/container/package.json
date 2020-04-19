@@ -1,0 +1,29 @@
+{
+  "name": "@baethon/udba-container",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Radoslaw Mejer <radmen@radmen.info>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "standard",
+    "lint:fix": "standard --fix",
+    "precommit": "lint-staged",
+    "test": "ava test/**/*.test.js"
+  },
+  "devDependencies": {
+    "ava": "^3.7.1",
+    "husky": "^4.2.5",
+    "sinon": "^9.0.2",
+    "standard": "^14.3.3"
+  },
+  "dependencies": {
+    "lodash.cond": "^4.5.2",
+    "lodash.curry": "^4.1.1",
+    "lodash.flow": "^3.5.0"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:fix"
+    ]
+  }
+}
