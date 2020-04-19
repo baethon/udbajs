@@ -1,14 +1,14 @@
 const test = require('ava')
 const { selfwire } = require('../../decorators')
-const { createContainer } = require('../../')
-const Test = require('../stubs/Test')
+const { Container } = require('../../')
 
 test.beforeEach(t => {
-  t.context.container = createContainer()
+  t.context.container = new Container()
+  t.context.Test = class {}
 })
 
 test('resolve binding', t => {
-  const { container } = t.context
+  const { container, Test } = t.context
 
   const selfwiredTest = selfwire(Test, app => {
     const instance = new Test()

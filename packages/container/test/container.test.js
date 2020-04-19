@@ -1,11 +1,11 @@
 const test = require('ava')
-const { Container } = require('../')
 const sinon = require('sinon')
-const Test = require('./stubs/Test')
-const InjectTest = require('./stubs/InjectTest')
+const { Container } = require('../')
+const FooStub = require('./stubs/foo-stub')
 
 test.beforeEach(t => {
   t.context.container = new Container()
+  t.context.Test = class {}
 })
 
 test('resolves bound instances', t => {
@@ -66,30 +66,8 @@ test('resolve local modules | selfwired objects', t => {
   })
 })
 
-test.skip('Automatic class resolving | resolves class', t => {
-  const { container } = t.context
-  container.addResolveDir(__dirname)
-
-  const test = container.make('stubs/Test')
-
-  t.true(test instanceof Test)
-})
-
-test.skip('Automatic class resolving | injects resolved instances', t => {
-  const { container } = t.context
-  container.addResolveDir(__dirname)
-
-  container.instance('foo', 'foo')
-
-  const injectTest = container.make('stubs/InjectTest')
-
-  t.true(injectTest instanceof InjectTest)
-  t.true(injectTest.testFromResolve instanceof Test)
-  t.is('foo', injectTest.foo)
-})
-
 test('Extending objects | allows to extend bound objects', t => {
-  const { container } = t.context
+  const { container, Test } = t.context
 
   const extendFn = object => {
     object.foo = 'foo'
@@ -107,7 +85,7 @@ test('Extending objects | allows to extend bound objects', t => {
 })
 
 test('Extending objects | allows to extend singleton', t => {
-  const { container } = t.context
+  const { container, Test } = t.context
 
   const spy = sinon.spy(test => {
     test.foo = Math.random()
@@ -126,17 +104,18 @@ test('Extending objects | allows to extend singleton', t => {
   t.truthy(spy.calledOnce)
 })
 
-test.skip('Extending objects | allows to extend unbound class factories', t => {
-  const { container } = t.context
-  container.addResolveDir(__dirname)
+test('Extending objects | allows to extend unbound class factories', t => {
+  const container = new Container({
+    root: __dirname
+  })
 
-  container.extend('stubs/Test', test => {
+  container.extend('~stubs/foo-stub', test => {
     test.foo = 'foo'
   })
 
-  const test = container.make('stubs/Test')
+  const test = container.make('~stubs/foo-stub')
 
-  t.true(test instanceof Test)
+  t.true(test instanceof FooStub)
   t.is('foo', test.foo)
 })
 
