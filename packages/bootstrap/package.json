@@ -17,7 +17,7 @@
     "url": "git+https://github.com/baethon/udbajs.git"
   },
   "scripts": {
-    "test": "ava test/**/*.test.js",
+    "test": "ava",
     "precommit": "lint-staged",
     "lint": "standard",
     "lint:fix": "standard --fix"
@@ -40,5 +40,10 @@
   },
   "files": [
     "src/**/*.js"
-  ]
+  ],
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ]
+  }
 }
