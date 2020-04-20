@@ -25,19 +25,19 @@ const groupByPriority = (carry, { priority, provider }) => ({
 class Bootstrap {
   /**
    * @param {String} providersDir
-   * @param {Object} options
+   * @param {Object} [options]
    * @param {Number} [options.concurrency]
+   * @param {Array}  [options.args=[]] arguments which will be passed
+   *                                   to setup() and shutdown() methods
    */
   constructor (providersDir, options = {}) {
-    const { concurrency = os.cpus().length } = options
-
+    this._options = options
     this._providersDir = providersDir
-    this._concurrency = concurrency
     this._providers = {}
   }
 
-  async setup (...args) {
-    this._providers = await this._loadProviders(args)
+  async setup () {
+    this._providers = await this._loadProviders()
 
     await this._runMethod(this._sortedProviders, 'setup')
   }
@@ -64,16 +64,16 @@ class Bootstrap {
   /**
    * Load provider modules
    *
-   * @param {Array} args list of arguments injected in the constructor
    * @return {Promise<Object>} list of providers grouped by their priority
    * @private
    */
-  async _loadProviders (args) {
+  async _loadProviders () {
     debug('loading providers')
+    const { concurrency = os.cpus().length } = this._options
 
     const files = await globby(
       path.join(this._providersDir, '*.js'),
-      { concurrency: this._concurrency }
+      { concurrency }
     )
 
     const providers = files.map(path => {
@@ -81,7 +81,7 @@ class Bootstrap {
 
       return {
         priority: getPriority(path),
-        provider: new Provider(...args)
+        provider: new Provider()
       }
     })
 
@@ -97,6 +97,11 @@ class Bootstrap {
    * @private
    */
   async _runMethod (providers, method) {
+    const {
+      concurrency = os.cpus().length,
+      args = []
+    } = this._options
+
     // make sure that the providers are executed serially by their priority
     // the inner list of providers can be executed concurrently
     await pAll(
@@ -107,11 +112,11 @@ class Bootstrap {
           list.map(
             provider => () => {
               if (provider[method]) {
-                return provider[method]()
+                return provider[method](...args)
               }
             }
           ),
-          { concurrency: this._concurrency }
+          { concurrency }
         )
       }),
       { concurrency: 1 }

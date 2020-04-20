@@ -1,15 +1,11 @@
 const { providerStub } = require('../stubs')
 
 module.exports = class {
-  constructor (app) {
-    this.app = app
+  async setup (app) {
+    providerStub('last-setup', app)
   }
 
-  async setup () {
-    providerStub('last-setup', this.app)
-  }
-
-  async shutdown () {
-    providerStub('last-shutdown')
+  async shutdown (app) {
+    providerStub('last-shutdown', app)
   }
 }
