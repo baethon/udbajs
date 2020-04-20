@@ -36,8 +36,8 @@ class Bootstrap {
     this._providers = {}
   }
 
-  async setup () {
-    this._providers = await this._loadProviders()
+  async setup (...args) {
+    this._providers = await this._loadProviders(args)
 
     await this._runMethod(this._sortedProviders, 'setup')
   }
@@ -64,10 +64,11 @@ class Bootstrap {
   /**
    * Load provider modules
    *
+   * @param {Array} args list of arguments injected in the constructor
    * @return {Promise<Object>} list of providers grouped by their priority
    * @private
    */
-  async _loadProviders () {
+  async _loadProviders (args) {
     debug('loading providers')
 
     const files = await globby(
@@ -80,7 +81,7 @@ class Bootstrap {
 
       return {
         priority: getPriority(path),
-        provider: new Provider()
+        provider: new Provider(...args)
       }
     })
 
